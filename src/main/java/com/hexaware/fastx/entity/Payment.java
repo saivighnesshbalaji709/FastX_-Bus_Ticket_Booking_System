@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int paymentId;
     
     @ManyToOne
@@ -32,14 +32,10 @@ public class Payment {
     private double amount;
 
     @NotBlank(message = "Payment method is required")
-    @Size(max = 50, message = "Payment method cannot exceed 50 characters")
     private String paymentMethod;
 
     @NotBlank(message = "Payment status is required")
-    @Size(max = 50, message = "Payment status cannot exceed 50 characters")
     private String paymentStatus;
-
-    @NotNull(message = "Payment time is required")
     private LocalDateTime paymentTime;
 
     public Payment() {

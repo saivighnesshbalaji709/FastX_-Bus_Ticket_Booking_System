@@ -3,11 +3,20 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.hexaware.fastx.dto.SeatDTO;
 import com.hexaware.fastx.entity.Seat;
 import com.hexaware.fastx.service.ISeatService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/seats")
@@ -16,10 +25,9 @@ public class SeatController {
     @Autowired
     private ISeatService seatService;
 
-    // Optional: If needed outside of Bus creation (e.g. manual seat addition)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
-    public Seat addSeat(@RequestBody SeatDTO seatDTO) {
+    public Seat addSeat(@Valid @RequestBody SeatDTO seatDTO) {
         return seatService.addSeat(seatDTO);
     }
 

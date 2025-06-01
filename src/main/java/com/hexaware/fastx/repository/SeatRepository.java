@@ -12,6 +12,5 @@ public interface SeatRepository extends JpaRepository<Seat, Integer> {
 
     @Query(value = "SELECT * FROM seat", nativeQuery = true)
     List<Seat> getAllSeats();
-
 	List<Seat> findByBus_BusId(int busId);
 }

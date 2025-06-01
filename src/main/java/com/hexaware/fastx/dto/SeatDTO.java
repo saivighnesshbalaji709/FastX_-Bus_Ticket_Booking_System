@@ -1,47 +1,32 @@
 package com.hexaware.fastx.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import com.hexaware.fastx.entity.*;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-
 public class SeatDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int seatId;
 
-    @ManyToOne
-    @JoinColumn(name = "routeId")
-    @NotNull(message = "Route is required")
-    private Route route;
+    @NotNull(message = "Route ID is required")
+    private int routeId;
 
     @NotBlank(message = "Seat number is required")
     @Size(max = 5, message = "Seat number can't exceed 5 characters")
     private String seatNumber;
-    
-    @ManyToOne
-    @JoinColumn(name = "bus_id", nullable = false)
-    @NotNull(message = "Bus is required")
+
+    @NotNull(message = "Bus ID is required")
     private int busId;
 
     private boolean isBooked;
 
-    public SeatDTO() {
-        super();
-    }
+    public SeatDTO() {}
 
-    public SeatDTO(int seatId, Route route, String seatNumber, boolean isBooked) {
-        super();
+    public SeatDTO(int seatId, int routeId, String seatNumber, int busId, boolean isBooked) {
         this.seatId = seatId;
-        this.route = route;
+        this.routeId = routeId;
         this.seatNumber = seatNumber;
+        this.busId = busId;
         this.isBooked = isBooked;
     }
 
@@ -53,12 +38,12 @@ public class SeatDTO {
         this.seatId = seatId;
     }
 
-    public Route getRoute() {
-        return route;
+    public int getRouteId() {
+        return routeId;
     }
 
-    public void setRoute(Route route) {
-        this.route = route;
+    public void setRouteId(int routeId) {
+        this.routeId = routeId;
     }
 
     public String getSeatNumber() {
@@ -69,6 +54,14 @@ public class SeatDTO {
         this.seatNumber = seatNumber;
     }
 
+    public int getBusId() {
+        return busId;
+    }
+
+    public void setBusId(int busId) {
+        this.busId = busId;
+    }
+
     public boolean isBooked() {
         return isBooked;
     }
@@ -76,18 +69,10 @@ public class SeatDTO {
     public void setBooked(boolean isBooked) {
         this.isBooked = isBooked;
     }
-    public int getBusId() {
-		return busId;
-	}
 
-	public void setBus(int busId) {
-		this.busId = busId;
-	}
-	
-	 @Override
-		public String toString() {
-			return "Seat [seatId=" + seatId + ", routeId=" + route + ", bus=" + busId + ", seatNumber=" + seatNumber
-					+ ", isBooked=" + isBooked + "]";
-		}
-
+    @Override
+    public String toString() {
+        return "SeatDTO [seatId=" + seatId + ", routeId=" + routeId + ", seatNumber=" + seatNumber
+                + ", busId=" + busId + ", isBooked=" + isBooked + "]";
+    }
 }

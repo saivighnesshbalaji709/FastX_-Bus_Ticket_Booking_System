@@ -1,6 +1,8 @@
 package com.hexaware.fastx.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,21 +49,49 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    public Booking createBooking(Booking booking) {
-        logger.info("Creating booking for user ID: {} and route ID: {}", 
-                    booking.getUserId().getUserId(), booking.getRouteId().getRouteId());
+    public Booking createBooking(BookingDTO dto) {
+        logger.info("Creating booking for user ID: {} and route ID: {}", dto.getUserId(), dto.getRouteId());
 
-        User user = userRepo.findById(booking.getUserId().getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + booking.getUserId().getUserId()));
-        Route route = routeRepo.findById(booking.getRouteId().getRouteId())
-                .orElseThrow(() -> new IllegalArgumentException("Route not found with ID: " + booking.getRouteId().getRouteId()));
+        User user = userRepo.findById(dto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + dto.getUserId()));
 
+        Route route = routeRepo.findById(dto.getRouteId())
+                .orElseThrow(() -> new IllegalArgumentException("Route not found with ID: " + dto.getRouteId()));
+
+        // Fetch all existing bookings for this route
+        List<Booking> existingBookings = repo.findByRouteId(route);
+
+        // Collect all already booked seat numbers
+        Set<String> bookedSeats = new HashSet<>();
+        for (Booking existing : existingBookings) {
+            if (existing.getSeatNumbers() != null) {
+                String[] seats = existing.getSeatNumbers().split(",");
+                for (String seat : seats) {
+                    bookedSeats.add(seat.trim());
+                }
+            }
+        }
+
+        // Check if requested seats are already booked
+        for (String seat : dto.getSeatNumbers()) {
+            if (bookedSeats.contains(seat)) {
+                throw new IllegalArgumentException("Seat number " + seat + " is already booked for this route.");
+            }
+        }
+
+        // If all seats are free, proceed
+        Booking booking = new Booking();
         booking.setUserId(user);
         booking.setRouteId(route);
+        booking.setSeatsBooked(dto.getSeatsBooked());
+        booking.setSeatNumbers(String.join(",", dto.getSeatNumbers()));  // Convert list to comma-separated string
+        booking.setTotalAmount(dto.getTotalAmount());
+        booking.setStatus(dto.getStatus());
+        booking.setBookingTime(dto.getBookingTime());
 
-        Booking savedBooking = repo.save(booking);
-        logger.info("Booking created with ID: {}", savedBooking.getBookingId());
-        return savedBooking;
+        Booking saved = repo.save(booking);
+        logger.info("Booking created with ID: {}", saved.getBookingId());
+        return saved;
     }
 
     @Override

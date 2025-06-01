@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hexaware.fastx.dto.BusDTO;
 import com.hexaware.fastx.entity.Bus;
 import com.hexaware.fastx.service.IBusService;
 
@@ -33,8 +34,8 @@ public class BusController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('OPERATOR')")
     @PostMapping
-    public ResponseEntity<Bus> addBus(@Valid @RequestBody Bus busDTO) {
-        Bus createdBus = busService.createBus(busDTO);
+    public ResponseEntity<Bus> addBus(@Valid @RequestBody BusDTO busDTO) {
+        Bus createdBus = busService.addBus(busDTO);
         return new ResponseEntity<>(createdBus, HttpStatus.CREATED);
     }
 

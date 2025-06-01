@@ -12,33 +12,12 @@ import jakarta.validation.constraints.Size;
 
 public class UserDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;
-
-    @NotBlank(message = "Name is required")
-    @Size(max = 100, message = "Name can't exceed 100 characters")
     private String name;
-
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
     private String email;
-
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 20, message = "Password must be between 6 and 20 characters")
     private String password;
-
-    @NotBlank(message = "Gender is required")
-    @Pattern(regexp = "Male|Female|Other", message = "Gender must be Male, Female or Other")
     private String gender;
-
-    @NotNull(message = "Contact number is required")
-    @Pattern(regexp = "\\d{10}", message = "Contact number must be exactly 10 digits")
     private String contactNumber;
-
-    @NotBlank(message = "Role is required")
-    @Pattern(regexp = "passenger|admin|bus operator", flags = Pattern.Flag.CASE_INSENSITIVE,
-             message = "Role must be either passenger, admin, or bus operator")
     private String role;
 
     public UserDTO() {

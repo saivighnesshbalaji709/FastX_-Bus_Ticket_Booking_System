@@ -1,16 +1,24 @@
 package com.hexaware.fastx.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.hexaware.fastx.dto.BookingDTO;
 import com.hexaware.fastx.entity.Booking;
 import com.hexaware.fastx.entity.User;
 import com.hexaware.fastx.service.IBookingService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -19,11 +27,10 @@ public class BookingController {
     @Autowired
     private IBookingService bookingService;
 
-    @PostMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Booking> addBooking(@RequestBody Booking bookingDTO) {
-        Booking booking = bookingService.createBooking(bookingDTO);
-        return ResponseEntity.ok(booking);
+    @PostMapping("/bookings")
+    public ResponseEntity<Booking> createBooking(@RequestBody BookingDTO dto) {
+        Booking booking = bookingService.createBooking(dto);
+        return new ResponseEntity<>(booking, HttpStatus.CREATED);
     }
 
     @PutMapping("/{bookingId}")

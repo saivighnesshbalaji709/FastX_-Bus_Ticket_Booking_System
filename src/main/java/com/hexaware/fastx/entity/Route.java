@@ -17,26 +17,16 @@ import jakarta.validation.constraints.NotNull;
 public class Route {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int routeId;
 
     @ManyToOne
     @JoinColumn(name = "bus_id", nullable = false)
     @NotNull(message = "Bus must not be null")
     private Bus busId;
-
-    @NotBlank(message = "Origin must not be blank")
     private String origin;
-
-    @NotBlank(message = "Destination must not be blank")
     private String destination;
-
-    @NotNull(message = "Departure time is required")
-    @FutureOrPresent(message = "Departure time cannot be in the past")
     private LocalDateTime departureTime;
-
-    @NotNull(message = "Arrival time is required")
-    @FutureOrPresent(message = "Arrival time cannot be in the past")
     private LocalDateTime arrivalTime;
 
     @Min(value = 0, message = "Fare must be positive or zero")

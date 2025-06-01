@@ -44,13 +44,18 @@ public class SeatServiceImpl implements ISeatService {
         Bus bus = busRepository.findById(seatDTO.getBusId())
                 .orElseThrow(() -> new BusNotFoundException("Bus not found with id: " + seatDTO.getBusId()));
 
+        Route route = routeRepo.findById(seatDTO.getRouteId())
+                .orElseThrow(() -> new SeatNotFoundException("Route not found with id: " + seatDTO.getRouteId()));
+
         Seat seat = new Seat();
         seat.setBus(bus);
+        seat.setRouteId(route);
         seat.setSeatNumber(seatDTO.getSeatNumber());
         seat.setBooked(seatDTO.isBooked());
 
         return repo.save(seat);
     }
+    
     @Override
     public Seat getSeatById(int id) {
         logger.info("Fetching seat with ID: {}", id);

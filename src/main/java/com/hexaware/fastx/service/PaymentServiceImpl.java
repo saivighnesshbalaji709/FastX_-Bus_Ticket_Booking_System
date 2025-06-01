@@ -1,7 +1,10 @@
 package com.hexaware.fastx.service;
 
+import com.hexaware.fastx.dto.PaymentDTO;
+import com.hexaware.fastx.entity.Booking;
 import com.hexaware.fastx.entity.Payment;
 import com.hexaware.fastx.exception.PaymentNotFoundException;
+import com.hexaware.fastx.repository.BookingRepository;
 import com.hexaware.fastx.repository.PaymentRepository;
 
 import org.slf4j.Logger;
@@ -19,6 +22,10 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Autowired
     private PaymentRepository repo;
+    
+    @Autowired
+    private BookingRepository bookingRepo;
+    
 
     @Override
     public List<Payment> getAllPayments() {
@@ -36,13 +43,28 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
-    public Payment createPayment(Payment payment) {
-        logger.info("Creating new payment for booking ID: {}", 
-                    payment.getBookingId() != null ? payment.getBookingId().getBookingId() : "N/A");
-        Payment savedPayment = repo.save(payment);
-        logger.info("Payment created with ID: {}", savedPayment.getPaymentId());
-        return savedPayment;
+    public Payment createPayment(PaymentDTO dto) {
+        logger.info("Creating payment for booking ID: {}", dto.getBookingId());
+
+        // Validate and fetch the associated Booking entity
+        Booking booking = bookingRepo.findById(dto.getBookingId())
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + dto.getBookingId()));
+
+        // Create and populate the Payment entity
+        Payment payment = new Payment();
+        payment.setBooking(booking);
+        payment.setAmount(dto.getAmount());
+        payment.setPaymentMethod(dto.getPaymentMethod());
+        payment.setPaymentStatus(dto.getPaymentStatus());
+        payment.setPaymentTime(dto.getPaymentTime());
+
+        // Save the Payment
+        Payment saved = repo.save(payment);
+        logger.info("Payment created with ID: {}", saved.getPaymentId());
+
+        return saved;
     }
+
 
     @Override
     public Payment updatePayment(int id, Payment updatedPayment) {
@@ -73,4 +95,6 @@ public class PaymentServiceImpl implements IPaymentService {
         logger.info("Fetching payments by user ID: {}", userId);
         return repo.findPaymentsByUser_UserId(userId);
     }
+
+
 }

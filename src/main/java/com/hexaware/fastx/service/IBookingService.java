@@ -10,7 +10,7 @@ public interface IBookingService {
     List<BookingDTO> getAllBookings();
     Booking getBookingById(int id);
     List<Booking> getBookingsByUserId(User userId);
-    Booking createBooking(Booking booking);
     Booking updateBooking(int id, Booking updatedBooking);
     void deleteBooking(int id);
+	Booking createBooking(BookingDTO dto);
 }

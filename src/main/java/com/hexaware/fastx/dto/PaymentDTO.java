@@ -2,12 +2,6 @@ package com.hexaware.fastx.dto;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import com.hexaware.fastx.entity.*;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,13 +9,9 @@ import jakarta.validation.constraints.Size;
 
 public class PaymentDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int paymentId;
 
-    @ManyToOne
-    @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
+    private int bookingId; // replaced Booking with bookingId
 
     @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
     private double amount;
@@ -41,10 +31,10 @@ public class PaymentDTO {
         super();
     }
 
-    public PaymentDTO(int paymentId, Booking booking, double amount, String paymentMethod, String paymentStatus,
-            LocalDateTime paymentTime) {
+    public PaymentDTO(int paymentId, int bookingId, double amount, String paymentMethod,
+                      String paymentStatus, LocalDateTime paymentTime) {
         this.paymentId = paymentId;
-        this.booking = booking;
+        this.bookingId = bookingId;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.paymentStatus = paymentStatus;
@@ -59,12 +49,12 @@ public class PaymentDTO {
         this.paymentId = paymentId;
     }
 
-    public Booking getBooking() {
-        return booking;
+    public int getBookingId() {
+        return bookingId;
     }
 
-    public void setBooking(Booking booking) {
-        this.booking = booking;
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
     }
 
     public double getAmount() {
@@ -104,7 +94,7 @@ public class PaymentDTO {
         return "Payment Details:\n" +
                 "----------------\n" +
                 "Payment ID     : " + paymentId + "\n" +
-                "Booking ID     : " + (booking != null ? booking.getBookingId() : "N/A") + "\n" +
+                "Booking ID     : " + bookingId + "\n" +
                 "Amount         : " + String.format("%.2f", amount) + "\n" +
                 "Payment Method : " + paymentMethod + "\n" +
                 "Payment Status : " + paymentStatus + "\n" +

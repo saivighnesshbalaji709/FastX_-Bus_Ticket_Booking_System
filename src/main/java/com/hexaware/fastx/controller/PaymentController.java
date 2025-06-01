@@ -19,7 +19,7 @@ public class PaymentController {
     private IPaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<Payment> addPayment(@Valid @RequestBody Payment paymentDTO) {
+    public ResponseEntity<Payment> addPayment(@Valid @RequestBody PaymentDTO paymentDTO) {
         Payment saved = paymentService.createPayment(paymentDTO);
         return ResponseEntity.ok(saved);
     }

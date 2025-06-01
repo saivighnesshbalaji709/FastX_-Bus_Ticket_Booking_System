@@ -30,14 +30,13 @@ public class Booking {
     @NotNull(message = "Route is required")
     private Route routeId;
 
-    @NotNull(message = "Booking time must not be null")
     private LocalDateTime bookingTime;
 
     @Min(value = 1, message = "At least one seat must be booked")
     private int seatsBooked;
 
     @NotNull(message = "Seat numbers must not be null")
-    @Size(min = 1, max = 80, message = "Seat numbers must be between 1 and 80 characters")
+    @Size(min = 1, max = 80, message = "Seat numbers must be between 1 and 80")
     private String seatNumbers;
 
     @Positive(message = "Total amount must be a positive value")

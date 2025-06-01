@@ -11,6 +11,6 @@ import com.hexaware.fastx.entity.Bus;
 @Repository
 public interface BusRepository extends JpaRepository<Bus, Integer> {
 
-    @Query(value = "SELECT * FROM bus", nativeQuery = true)
+    @Query(value = "SELECT * FROM buses", nativeQuery = true)
     List<Bus> getAllBuses(); 
 }

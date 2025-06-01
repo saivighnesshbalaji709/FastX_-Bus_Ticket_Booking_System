@@ -8,9 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hexaware.fastx.dto.BusDTO;
 import com.hexaware.fastx.entity.Bus;
+import com.hexaware.fastx.entity.Route;
 import com.hexaware.fastx.exception.BusNotFoundException;
+import com.hexaware.fastx.exception.RouteNotFoundException;
 import com.hexaware.fastx.repository.BusRepository;
+import com.hexaware.fastx.repository.RouteRepository;
 
 @Service
 public class BusServiceImpl implements IBusService {
@@ -19,6 +23,28 @@ public class BusServiceImpl implements IBusService {
 
     @Autowired
     private BusRepository repo;
+    
+    @Autowired
+    private RouteRepository routeRepo;
+
+    @Override
+    public Bus addBus(BusDTO dto) {
+        Bus bus = new Bus();
+
+        bus.setBusName(dto.getBusName());
+        bus.setBusNumber(dto.getBusNumber());
+        bus.setBusType(dto.getBusType());
+        bus.setTotalSeats(dto.getTotalSeats());
+        bus.setAmenities(dto.getAmenities());
+
+        Route route = routeRepo.findById(dto.getRouteId())
+                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + dto.getRouteId()));
+
+        bus.setRoute(route); 
+
+        return repo.save(bus);
+    }
+
 
     @Override
     public List<Bus> getAllBuses() {
@@ -35,13 +61,7 @@ public class BusServiceImpl implements IBusService {
         });
     }
 
-    @Override
-    public Bus createBus(Bus bus) {
-        logger.info("Creating new bus with number: {}", bus.getBusNumber());
-        Bus savedBus = repo.save(bus);
-        logger.info("Bus created with ID: {}", savedBus.getBusId());
-        return savedBus;
-    }
+  
 
     @Override
     public Bus updateBus(int id, Bus updatedBus) {

@@ -1,52 +1,39 @@
 package com.hexaware.fastx.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+public class BookingDTO {
 
-public class BookingDTO {  
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bookingId;
-
-    @NotNull(message = "User ID must not be null")
     private int userId;
-
-    @NotNull(message = "Route ID must not be null")
     private int routeId;
 
-    @NotNull(message = "Booking time must not be null")
     private LocalDateTime bookingTime;
 
     @Min(value = 1, message = "At least one seat must be booked")
     private int seatsBooked;
 
     @NotNull(message = "Seat numbers must not be null")
-    @Size(min = 1, max = 80, message = "Seat numbers must be between 1 and 80 characters")
-    private String seatNumbers;
+    @Size(min = 1, message = "At least one seat must be selected")
+    private List<String> seatNumbers;
 
     @Positive(message = "Total amount must be a positive value")
     private double totalAmount;
 
-    @NotNull(message = "Booking status must not be null")
-    @Size(min = 3, max = 30, message = "Enter status within 3 to 30 characters")
     private String status;
 
     public BookingDTO() {
         super();
     }
 
-    public BookingDTO(int bookingId, int userId, int routeId, LocalDateTime bookingTime, int seatsBooked,
-                   String seatNumbers, double totalAmount, String status) {
+    public BookingDTO(int bookingId, int userId, int routeId, LocalDateTime bookingTime,
+                      int seatsBooked, List<String> seatNumbers, double totalAmount, String status) {
         this.bookingId = bookingId;
         this.userId = userId;
         this.routeId = routeId;
@@ -97,11 +84,11 @@ public class BookingDTO {
         this.seatsBooked = seatsBooked;
     }
 
-    public String getSeatNumbers() {
+    public List<String> getSeatNumbers() {
         return seatNumbers;
     }
 
-    public void setSeatNumbers(String seatNumbers) {
+    public void setSeatNumbers(List<String> seatNumbers) {
         this.seatNumbers = seatNumbers;
     }
 
