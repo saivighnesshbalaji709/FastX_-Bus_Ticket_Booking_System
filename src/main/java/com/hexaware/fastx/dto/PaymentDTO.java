@@ -1,11 +1,11 @@
-package com.hexaware.fastx.entity;
+package com.hexaware.fastx.dto;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import com.hexaware.fastx.entity.*;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.DecimalMin;
@@ -13,20 +13,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Entity
-public class Payment {
+public class PaymentDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int paymentId;
-    
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
     @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
-    private Booking bookingId;
+    private Booking booking;
 
     @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
     private double amount;
@@ -42,22 +37,18 @@ public class Payment {
     @NotNull(message = "Payment time is required")
     private LocalDateTime paymentTime;
 
-    public Payment() {
+    public PaymentDTO() {
         super();
     }
 
-    public Payment(int paymentId, Booking bookingId, double amount, String paymentMethod, String paymentStatus,
+    public PaymentDTO(int paymentId, Booking booking, double amount, String paymentMethod, String paymentStatus,
             LocalDateTime paymentTime) {
         this.paymentId = paymentId;
-        this.bookingId = bookingId;
+        this.booking = booking;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.paymentStatus = paymentStatus;
         this.paymentTime = paymentTime;
-    }
-    
-    public Booking getBookingId() {
-        return bookingId;
     }
 
     public int getPaymentId() {
@@ -69,11 +60,11 @@ public class Payment {
     }
 
     public Booking getBooking() {
-        return bookingId;
+        return booking;
     }
 
-    public void setBooking(Booking bookingId) {
-        this.bookingId = bookingId;
+    public void setBooking(Booking booking) {
+        this.booking = booking;
     }
 
     public double getAmount() {
@@ -113,7 +104,7 @@ public class Payment {
         return "Payment Details:\n" +
                 "----------------\n" +
                 "Payment ID     : " + paymentId + "\n" +
-                "Booking ID     : " + (bookingId != null ? bookingId.getBookingId() : "N/A") + "\n" +
+                "Booking ID     : " + (booking != null ? booking.getBookingId() : "N/A") + "\n" +
                 "Amount         : " + String.format("%.2f", amount) + "\n" +
                 "Payment Method : " + paymentMethod + "\n" +
                 "Payment Status : " + paymentStatus + "\n" +

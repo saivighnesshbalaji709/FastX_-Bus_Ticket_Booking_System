@@ -1,22 +1,20 @@
-package com.hexaware.fastx.entity;
+package com.hexaware.fastx.dto;
 
 
 import java.util.List;
 
+import com.hexaware.fastx.entity.Route;
+
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "buses")
-public class Bus {
+public class BusDTO {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +38,7 @@ public class Bus {
     @Size(max = 300, message = "Amenities can't exceed 300 characters")
     private String amenities;
     
-    @OneToMany(mappedBy = "busId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bus", cascade = CascadeType.ALL)
     private List<Route> routes;
 
 

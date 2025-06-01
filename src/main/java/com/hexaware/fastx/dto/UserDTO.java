@@ -1,6 +1,5 @@
-package com.hexaware.fastx.entity;
+package com.hexaware.fastx.dto;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,8 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-@Entity
-public class User {
+
+public class UserDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,11 +41,11 @@ public class User {
              message = "Role must be either passenger, admin, or bus operator")
     private String role;
 
-    public User() {
+    public UserDTO() {
         super();
     }
 
-    public User(int userId, String name, String email, String password, String gender, String contactNumber, String role) {
+    public UserDTO(int userId, String name, String email, String password, String gender, String contactNumber, String role) {
         super();
         this.userId = userId;
         this.name = name;

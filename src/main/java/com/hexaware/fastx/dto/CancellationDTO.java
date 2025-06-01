@@ -1,4 +1,4 @@
-package com.hexaware.fastx.entity;
+package com.hexaware.fastx.dto;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Cancellation_Table")
-public class Cancellation {
+public class CancellationDTO {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,14 +19,14 @@ public class Cancellation {
 	private LocalDateTime cancellationDateTime;
 	private double refundAmount;
 	
-	public Cancellation(int cancellationId, int bookingId, LocalDateTime cancellationDateTime, double refundAmount) {
+	public CancellationDTO(int cancellationId, int bookingId, LocalDateTime cancellationDateTime, double refundAmount) {
 		super();
 		this.cancellationId = cancellationId;
 		this.bookingId = bookingId;
 		this.cancellationDateTime = cancellationDateTime;
 		this.refundAmount = refundAmount;
 	}
-	public Cancellation() {
+	public CancellationDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -1,11 +1,12 @@
-package com.hexaware.fastx.entity;
+package com.hexaware.fastx.dto;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import com.hexaware.fastx.entity.*;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -13,8 +14,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Entity
-public class Route {
+
+public class RouteDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +24,7 @@ public class Route {
     @ManyToOne
     @JoinColumn(name = "bus_id", nullable = false)
     @NotNull(message = "Bus must not be null")
-    private Bus busId;
+    private int busId;
 
     @NotBlank(message = "Origin must not be blank")
     private String origin;
@@ -42,11 +43,11 @@ public class Route {
     @Min(value = 0, message = "Fare must be positive or zero")
     private double fare;
 
-    public Route() {
+    public RouteDTO() {
         super();
     }
 
-    public Route(int routeId, Bus busId, String origin, String destination, LocalDateTime departureTime,
+    public RouteDTO(int routeId, int busId, String origin, String destination, LocalDateTime departureTime,
                  LocalDateTime arrivalTime, double fare) {
         this.routeId = routeId;
         this.busId = busId;
@@ -65,11 +66,11 @@ public class Route {
         this.routeId = routeId;
     }
 
-    public Bus getBusId() {
+    public int getBusId() {
         return busId;
     }
 
-    public void setBusId(Bus busId) {
+    public void setBusId(int busId) {
         this.busId = busId;
     }
 
@@ -113,14 +114,4 @@ public class Route {
         this.fare = fare;
     }
 
-    @Override
-    public String toString() {
-        return "Route [routeId=" + routeId +
-               ", busId=" + (busId != null ? busId.getBusId() : "N/A") +
-               ", origin=" + origin +
-               ", destination=" + destination +
-               ", departureTime=" + departureTime +
-               ", arrivalTime=" + arrivalTime +
-               ", fare=" + fare + "]";
-    }
 }

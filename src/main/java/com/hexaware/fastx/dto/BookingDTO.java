@@ -1,34 +1,28 @@
-package com.hexaware.fastx.entity;
+package com.hexaware.fastx.dto;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-@Entity
-public class Booking {  
+
+public class BookingDTO {  
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bookingId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @NotNull(message = "User is required")
-    private User userId;
+    @NotNull(message = "User ID must not be null")
+    private int userId;
 
-    @ManyToOne
-    @JoinColumn(name = "route_id", nullable = false)
-    @NotNull(message = "Route is required")
-    private Route routeId;
+    @NotNull(message = "Route ID must not be null")
+    private int routeId;
 
     @NotNull(message = "Booking time must not be null")
     private LocalDateTime bookingTime;
@@ -47,11 +41,11 @@ public class Booking {
     @Size(min = 3, max = 30, message = "Enter status within 3 to 30 characters")
     private String status;
 
-    public Booking() {
+    public BookingDTO() {
         super();
     }
 
-    public Booking(int bookingId, User userId, Route routeId, LocalDateTime bookingTime, int seatsBooked,
+    public BookingDTO(int bookingId, int userId, int routeId, LocalDateTime bookingTime, int seatsBooked,
                    String seatNumbers, double totalAmount, String status) {
         this.bookingId = bookingId;
         this.userId = userId;
@@ -71,19 +65,19 @@ public class Booking {
         this.bookingId = bookingId;
     }
 
-    public User getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(User userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public Route getRouteId() {
+    public int getRouteId() {
         return routeId;
     }
 
-    public void setRouteId(Route routeId) {
+    public void setRouteId(int routeId) {
         this.routeId = routeId;
     }
 
