@@ -1,3 +1,10 @@
+/* Date: 02-06-2025
+ * Author: Sai Vighnessh
+ * 
+ * Represents a Payment entity.
+ * A payment can be associated with booking, user and has attributes such as paymentMethod, status, amount, etc.
+ */
+
 package com.hexaware.fastx.entity;
 
 import java.time.LocalDateTime;
@@ -10,11 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
-//Represents a Payment entity.
-//A payment can be associated with booking, user and has attributes such as paymentMethod, status, amount, etc.
 @Entity
 public class Payment {
 
@@ -34,6 +38,8 @@ public class Payment {
     private double amount;
 
     @NotBlank(message = "Payment method is required")
+    @Pattern(regexp = "card|upi|net banking", flags = Pattern.Flag.CASE_INSENSITIVE,
+             message = "Payment method must be either 'card', 'upi', or 'net banking'")
     private String paymentMethod;
 
     @NotBlank(message = "Payment status is required")

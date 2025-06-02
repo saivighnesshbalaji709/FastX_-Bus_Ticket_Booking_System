@@ -1,3 +1,12 @@
+
+/* Date: 02-06-2025
+ * Author: Sai Vighnessh
+ * 
+ * Represents a User entity.
+ * A User can operate the following BusTicketBookingSystem based on the roles such as 
+ * Passenger, Bus Operator, and Admin.
+ */
+
 package com.hexaware.fastx.entity;
 
 import jakarta.persistence.Entity;
@@ -10,8 +19,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-//Represents a User entity.
-//An User can operate the following BusTicketBookingSystem based on the roles such as Passenger, Bus Operator and Admin.
 @Entity
 public class User {
 

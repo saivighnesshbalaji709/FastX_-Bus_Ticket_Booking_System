@@ -1,3 +1,10 @@
+/* Date: 02-06-2025
+ * Author: Sai Vighnessh
+ * 
+ * Represents a Bus entity.
+ * A bus can be associated with multiple routes and has attributes such as type, number, amenities, etc.
+ */
+
 package com.hexaware.fastx.entity;
 
 
@@ -18,8 +25,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-//Represents a Bus entity.
-//A bus can be associated with multiple routes and has attributes such as type, number, amenities, etc.
 
 @Entity
 @Table(name = "buses")

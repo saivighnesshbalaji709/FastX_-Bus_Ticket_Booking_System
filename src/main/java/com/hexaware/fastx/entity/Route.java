@@ -1,3 +1,10 @@
+/* Date: 02-06-2025
+ * Author: Sai Vighnessh
+ * 
+ * Represents a Route entity.
+ * A Route can be associated with the bus entity and it has attributes such as origin, destination, timings, etc.
+ */
+
 package com.hexaware.fastx.entity;
 
 import java.time.LocalDateTime;
@@ -12,9 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-
-//Represents a Route entity.
-//A Route can be associated with the bus entity and it has attributes such as origin, destination, timings, etc.
 
 @Entity
 public class Route {

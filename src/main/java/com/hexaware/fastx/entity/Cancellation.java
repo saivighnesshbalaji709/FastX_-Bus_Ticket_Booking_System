@@ -1,3 +1,10 @@
+/* Date: 02-06-2025
+ * Author: Sai Vighnessh
+ * 
+ * Represents a cancellation entity.
+ * A cancellation can be associated with the booking, payments and it has attributes such as Id, amount, date, etc.
+ */
+
 package com.hexaware.fastx.entity;
 
 import java.time.LocalDateTime;

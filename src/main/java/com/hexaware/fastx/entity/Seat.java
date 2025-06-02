@@ -1,3 +1,10 @@
+/* Date: 02-06-2025
+ * Author: Sai Vighnessh
+ * 
+ * Represents a Seat entity. 
+ * A Seat is associated with the bus and Route entities and it has attributes like seatNumber,Bus, etc.
+ */
+
 package com.hexaware.fastx.entity;
 
 import jakarta.persistence.Entity;
@@ -10,8 +17,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-//Represents a Seat entity.
-//A Seat is associated with the bus and Route entities and it has attributes like seatNumber,Bus, etc.
 
 @Entity
 public class Seat {
