@@ -13,6 +13,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+//Represents the booking entity.
+//Each booking is associated with a user and a specific route.
+
 @Entity
 public class Booking {  
 

@@ -13,6 +13,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+//Represents a Payment entity.
+//A payment can be associated with booking, user and has attributes such as paymentMethod, status, amount, etc.
 @Entity
 public class Payment {
 

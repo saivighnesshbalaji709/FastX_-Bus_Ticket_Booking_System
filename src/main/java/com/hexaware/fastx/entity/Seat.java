@@ -10,6 +10,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+//Represents a Seat entity.
+//A Seat is associated with the bus and Route entities and it has attributes like seatNumber,Bus, etc.
+
 @Entity
 public class Seat {
 

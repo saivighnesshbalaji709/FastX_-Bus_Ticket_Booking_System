@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+//Represents a User entity.
+//An User can operate the following BusTicketBookingSystem based on the roles such as Passenger, Bus Operator and Admin.
 @Entity
 public class User {
 
