@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface CancellationRepository extends JpaRepository<Cancellation, Integer> {
 
-    @Query(value = "SELECT * FROM cancellation", nativeQuery = true)
+    @Query(value = "SELECT * FROM cancellation_table", nativeQuery = true)
     List<Cancellation> getAllCancellations();
 }

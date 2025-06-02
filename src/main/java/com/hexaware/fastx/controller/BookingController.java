@@ -6,18 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.hexaware.fastx.dto.BookingDTO;
-import com.hexaware.fastx.entity.Booking;
-import com.hexaware.fastx.entity.User;
 import com.hexaware.fastx.service.IBookingService;
 
 @RestController
@@ -27,23 +18,23 @@ public class BookingController {
     @Autowired
     private IBookingService bookingService;
 
-    @PostMapping("/bookings")
-    public ResponseEntity<Booking> createBooking(@RequestBody BookingDTO dto) {
-        Booking booking = bookingService.createBooking(dto);
-        return new ResponseEntity<>(booking, HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<BookingDTO> createBooking(@RequestBody BookingDTO dto) {
+        BookingDTO createdBooking = bookingService.createBooking(dto);
+        return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
 
     @PutMapping("/{bookingId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Booking> updateBooking(@PathVariable int bookingId, @RequestBody Booking bookingDTO) {
-        Booking updatedBooking = bookingService.updateBooking(bookingId, bookingDTO);
+    public ResponseEntity<BookingDTO> updateBooking(@PathVariable int bookingId, @RequestBody BookingDTO dto) {
+        BookingDTO updatedBooking = bookingService.updateBooking(bookingId, dto);
         return ResponseEntity.ok(updatedBooking);
     }
 
     @GetMapping("/{bookingId}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<Booking> getBookingById(@PathVariable int bookingId) {
-        Booking booking = bookingService.getBookingById(bookingId);
+    public ResponseEntity<BookingDTO> getBookingById(@PathVariable int bookingId) {
+        BookingDTO booking = bookingService.getBookingById(bookingId);
         return ResponseEntity.ok(booking);
     }
 
@@ -56,8 +47,8 @@ public class BookingController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and #userId == principal.userId)")
-    public ResponseEntity<List<Booking>> getBookingsByUserId(@PathVariable User userId) {
-        List<Booking> bookings = bookingService.getBookingsByUserId(userId);
+    public ResponseEntity<List<BookingDTO>> getBookingsByUserId(@PathVariable int userId) {
+        List<BookingDTO> bookings = bookingService.getBookingsByUserId(userId);
         return ResponseEntity.ok(bookings);
     }
 

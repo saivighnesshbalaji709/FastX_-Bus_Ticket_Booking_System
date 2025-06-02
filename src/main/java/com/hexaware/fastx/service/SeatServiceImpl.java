@@ -28,17 +28,18 @@ public class SeatServiceImpl implements ISeatService {
 
     @Autowired
     private RouteRepository routeRepo;
-    
+
     @Autowired
     private BusRepository busRepository;
 
     @Override
-    public List<Seat> getAllSeats() {
+    public List<SeatDTO> getAllSeats() {
         logger.info("Fetching all seats...");
-        return repo.getAllSeats();
+        return repo.findAll().stream().map(this::convertToDTO).toList();
     }
+
     @Override
-    public Seat addSeat(SeatDTO seatDTO) {
+    public SeatDTO addSeat(SeatDTO seatDTO) {
         logger.info("Adding new seat for bus ID {}", seatDTO.getBusId());
 
         Bus bus = busRepository.findById(seatDTO.getBusId())
@@ -53,53 +54,66 @@ public class SeatServiceImpl implements ISeatService {
         seat.setSeatNumber(seatDTO.getSeatNumber());
         seat.setBooked(seatDTO.isBooked());
 
-        return repo.save(seat);
+        Seat savedSeat = repo.save(seat);
+        return convertToDTO(savedSeat);
     }
-    
+
     @Override
-    public Seat getSeatById(int id) {
+    public SeatDTO getSeatById(int id) {
         logger.info("Fetching seat with ID: {}", id);
-        return repo.findById(id)
+        Seat seat = repo.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Seat not found with ID: {}", id);
                     return new SeatNotFoundException("Seat not found with ID: " + id);
                 });
+        return convertToDTO(seat);
     }
 
     @Override
-    public Seat createSeat(Seat seat) {
-        logger.info("Creating new seat...");
-        Route route = routeRepo.findById(seat.getRouteId().getRouteId())
-                .orElseThrow(() -> new SeatNotFoundException("Associated route not found with ID: " + seat.getRouteId().getRouteId()));
-        seat.setRouteId(route);
-        return repo.save(seat);
-    }
-
-    @Override
-    public Seat updateSeat(int id, Seat updatedSeat) {
+    public SeatDTO updateSeat(int id, SeatDTO seatDTO) {
         logger.info("Updating seat with ID: {}", id);
-        Seat s = getSeatById(id);
+        Seat seat = repo.findById(id)
+                .orElseThrow(() -> new SeatNotFoundException("Seat not found with ID: " + id));
 
-        Route route = routeRepo.findById(updatedSeat.getRouteId().getRouteId())
-                .orElseThrow(() -> new SeatNotFoundException("Associated route not found with ID: " + updatedSeat.getRouteId().getRouteId()));
+        Bus bus = busRepository.findById(seatDTO.getBusId())
+                .orElseThrow(() -> new BusNotFoundException("Bus not found with id: " + seatDTO.getBusId()));
 
-        s.setRouteId(route);
-        s.setSeatNumber(updatedSeat.getSeatNumber());
-        s.setBooked(updatedSeat.isBooked());
+        Route route = routeRepo.findById(seatDTO.getRouteId())
+                .orElseThrow(() -> new SeatNotFoundException("Route not found with id: " + seatDTO.getRouteId()));
 
-        return repo.save(s);
+        seat.setBus(bus);
+        seat.setRouteId(route);
+        seat.setSeatNumber(seatDTO.getSeatNumber());
+        seat.setBooked(seatDTO.isBooked());
+
+        Seat updatedSeat = repo.save(seat);
+        return convertToDTO(updatedSeat);
     }
 
     @Override
     public void deleteSeat(int id) {
         logger.info("Deleting seat with ID: {}", id);
-        Seat s = getSeatById(id);
-        repo.delete(s);
+        Seat seat = repo.findById(id)
+                .orElseThrow(() -> new SeatNotFoundException("Seat not found with ID: " + id));
+        repo.delete(seat);
     }
-	
+
     @Override
-    public List<Seat> getSeatsByBusId(int busId) {
+    public List<SeatDTO> getSeatsByBusId(int busId) {
         logger.info("Fetching seats for bus ID {}", busId);
-        return repo.findByBus_BusId(busId);
+        return repo.findByBus_BusId(busId).stream()
+                   .map(this::convertToDTO)
+                   .toList();
+    }
+
+    // Helper method to convert entity to DTO
+    private SeatDTO convertToDTO(Seat seat) {
+        SeatDTO dto = new SeatDTO();
+        dto.setSeatId(seat.getSeatId());
+        dto.setBusId(seat.getBus().getBusId());
+        dto.setRouteId(seat.getRouteId().getRouteId());
+        dto.setSeatNumber(seat.getSeatNumber());
+        dto.setBooked(seat.isBooked());
+        return dto;
     }
 }

@@ -1,9 +1,7 @@
 package com.hexaware.fastx.service;
 
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,18 +17,28 @@ import com.hexaware.fastx.repository.RouteRepository;
 @Service
 public class BusServiceImpl implements IBusService {
 
-    private static final Logger logger = LoggerFactory.getLogger(BusServiceImpl.class);
-
     @Autowired
     private BusRepository repo;
-    
+
     @Autowired
     private RouteRepository routeRepo;
 
-    @Override
-    public Bus addBus(BusDTO dto) {
-        Bus bus = new Bus();
+    // Convert Entity -> DTO
+    private BusDTO convertToDTO(Bus bus) {
+        BusDTO dto = new BusDTO();
+        dto.setBusId(bus.getBusId());
+        dto.setBusName(bus.getBusName());
+        dto.setBusNumber(bus.getBusNumber());
+        dto.setBusType(bus.getBusType());
+        dto.setTotalSeats(bus.getTotalSeats());
+        dto.setAmenities(bus.getAmenities());
+        dto.setRouteId(bus.getRoute() != null ? bus.getRoute().getRouteId() : 0);
+        return dto;
+    }
 
+    // Convert DTO -> Entity
+    private Bus convertToEntity(BusDTO dto) {
+        Bus bus = new Bus();
         bus.setBusName(dto.getBusName());
         bus.setBusNumber(dto.getBusNumber());
         bus.setBusType(dto.getBusType());
@@ -40,50 +48,56 @@ public class BusServiceImpl implements IBusService {
         Route route = routeRepo.findById(dto.getRouteId())
                 .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + dto.getRouteId()));
 
-        bus.setRoute(route); 
-
-        return repo.save(bus);
-    }
-
-
-    @Override
-    public List<Bus> getAllBuses() {
-        logger.info("Fetching all buses from the database");
-        return repo.getAllBuses(); 
+        bus.setRoute(route);
+        return bus;
     }
 
     @Override
-    public Bus getBusById(int id) {
-        logger.info("Fetching bus with ID: {}", id);
-        return repo.findById(id).orElseThrow(() -> {
-            logger.error("Bus not found with ID: {}", id);
-            return new BusNotFoundException("No bus found with ID: " + id);
-        });
+    public BusDTO addBus(BusDTO dto) {
+        Bus bus = convertToEntity(dto);
+        Bus savedBus = repo.save(bus);
+        return convertToDTO(savedBus);
     }
 
-  
+    @Override
+    public List<BusDTO> getAllBuses() {
+        return repo.getAllBuses()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
-    public Bus updateBus(int id, Bus updatedBus) {
-        logger.info("Updating bus with ID: {}", id);
-        Bus existingBus = getBusById(id);
+    public BusDTO getBusById(int id) {
+        Bus bus = repo.findById(id)
+                .orElseThrow(() -> new BusNotFoundException("No bus found with ID: " + id));
+        return convertToDTO(bus);
+    }
 
-        existingBus.setBusName(updatedBus.getBusName());
-        existingBus.setBusNumber(updatedBus.getBusNumber());
-        existingBus.setBusType(updatedBus.getBusType());
-        existingBus.setTotalSeats(updatedBus.getTotalSeats());
-        existingBus.setAmenities(updatedBus.getAmenities());
+    @Override
+    public BusDTO updateBus(int id, BusDTO dto) {
+        Bus existingBus = repo.findById(id)
+                .orElseThrow(() -> new BusNotFoundException("No bus found with ID: " + id));
+
+        existingBus.setBusName(dto.getBusName());
+        existingBus.setBusNumber(dto.getBusNumber());
+        existingBus.setBusType(dto.getBusType());
+        existingBus.setTotalSeats(dto.getTotalSeats());
+        existingBus.setAmenities(dto.getAmenities());
+
+        Route route = routeRepo.findById(dto.getRouteId())
+                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + dto.getRouteId()));
+
+        existingBus.setRoute(route);
 
         Bus savedBus = repo.save(existingBus);
-        logger.info("Bus with ID: {} updated successfully", id);
-        return savedBus;
+        return convertToDTO(savedBus);
     }
 
     @Override
     public void deleteBus(int id) {
-        logger.info("Deleting bus with ID: {}", id);
-        Bus b = getBusById(id);
-        repo.delete(b);
-        logger.info("Bus with ID: {} deleted successfully", id);
+        Bus bus = repo.findById(id)
+                .orElseThrow(() -> new BusNotFoundException("No bus found with ID: " + id));
+        repo.delete(bus);
     }
 }

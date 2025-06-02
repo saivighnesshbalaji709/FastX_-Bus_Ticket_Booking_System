@@ -1,6 +1,7 @@
 package com.hexaware.fastx.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,92 +27,107 @@ public class RouteServiceImpl implements IRouteService {
     @Autowired
     private BusRepository busRepo;
 
-    @Override
-    public List<Route> getAllRoutes() {
-        logger.info("Fetching all routes");
-        return routeRepo.getAllRoutes();
+    // Mapper: Entity -> DTO
+    private RouteDTO mapToDTO(Route route) {
+        RouteDTO dto = new RouteDTO();
+        dto.setRouteId(route.getRouteId());
+        dto.setBusId(route.getBusId().getBusId());
+        dto.setOrigin(route.getOrigin());
+        dto.setDestination(route.getDestination());
+        dto.setDepartureTime(route.getDepartureTime());
+        dto.setArrivalTime(route.getArrivalTime());
+        dto.setFare(route.getFare());
+        return dto;
     }
 
-    @Override
-    public Route getRouteById(int id) {
-        logger.info("Fetching route by ID: {}", id);
-        return routeRepo.findById(id)
-                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + id));
-    }
-
-    @Override
-    public Route createRoute(Route route) {
-        int busId = route.getBusId().getBusId();
-        logger.info("Creating route with bus ID: {}", busId);
-        
-        // Ensure bus exists
-        Bus bus = busRepo.findById(busId)
-                .orElseThrow(() -> new RuntimeException("Bus not found with ID: " + busId));
-        
+    // Mapper: DTO -> Entity (for create/update)
+    private Route mapToEntity(RouteDTO dto) {
+        Route route = new Route();
+        Bus bus = busRepo.findById(dto.getBusId())
+                .orElseThrow(() -> new BusNotFoundException("Bus not found with id: " + dto.getBusId()));
         route.setBusId(bus);
-        return routeRepo.save(route);
+        route.setOrigin(dto.getOrigin());
+        route.setDestination(dto.getDestination());
+        route.setDepartureTime(dto.getDepartureTime());
+        route.setArrivalTime(dto.getArrivalTime());
+        route.setFare(dto.getFare());
+        return route;
     }
 
     @Override
-    public Route updateRoute(int id, Route updatedRoute) {
+    public List<RouteDTO> getAllRoutes() {
+        logger.info("Fetching all routes");
+        List<Route> routes = routeRepo.getAllRoutes();
+        return routes.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public RouteDTO getRouteById(int id) {
+        logger.info("Fetching route by ID: {}", id);
+        Route route = routeRepo.findById(id)
+                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + id));
+        return mapToDTO(route);
+    }
+
+    @Override
+    public RouteDTO addRoute(RouteDTO routeDTO) {
+        logger.info("Adding new route: {}", routeDTO);
+        Route route = mapToEntity(routeDTO);
+        Route savedRoute = routeRepo.save(route);
+        return mapToDTO(savedRoute);
+    }
+
+    @Override
+    public RouteDTO updateRoute(int id, RouteDTO routeDTO) {
         logger.info("Updating route with ID: {}", id);
-        Route existingRoute = getRouteById(id);
+        Route existingRoute = routeRepo.findById(id)
+                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + id));
 
-        int busId = updatedRoute.getBusId().getBusId();
-        logger.info("Validating bus ID: {}", busId);
-
-        Bus bus = busRepo.findById(busId)
-                .orElseThrow(() -> new RuntimeException("Bus not found with ID: " + busId));
+        Bus bus = busRepo.findById(routeDTO.getBusId())
+                .orElseThrow(() -> new BusNotFoundException("Bus not found with id: " + routeDTO.getBusId()));
 
         existingRoute.setBusId(bus);
-        existingRoute.setOrigin(updatedRoute.getOrigin());
-        existingRoute.setDestination(updatedRoute.getDestination());
-        existingRoute.setDepartureTime(updatedRoute.getDepartureTime());
-        existingRoute.setArrivalTime(updatedRoute.getArrivalTime());
-        existingRoute.setFare(updatedRoute.getFare());
+        existingRoute.setOrigin(routeDTO.getOrigin());
+        existingRoute.setDestination(routeDTO.getDestination());
+        existingRoute.setDepartureTime(routeDTO.getDepartureTime());
+        existingRoute.setArrivalTime(routeDTO.getArrivalTime());
+        existingRoute.setFare(routeDTO.getFare());
 
-        return routeRepo.save(existingRoute);
+        Route updatedRoute = routeRepo.save(existingRoute);
+        return mapToDTO(updatedRoute);
     }
 
     @Override
     public void deleteRoute(int id) {
         logger.info("Deleting route with ID: {}", id);
-        Route route = getRouteById(id);
+        Route route = routeRepo.findById(id)
+                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + id));
         routeRepo.delete(route);
     }
 
     @Override
-    public List<Route> findByOrigin(String origin) {
+    public List<RouteDTO> findByOrigin(String origin) {
         logger.info("Finding routes with origin: {}", origin);
         List<Route> routes = routeRepo.findByOrigin(origin);
         if (routes.isEmpty()) {
             throw new RouteNotFoundException("No routes found from origin: " + origin);
         }
-        return routes;
+        return routes.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Route> findByDestination(String destination) {
+    public List<RouteDTO> findByDestination(String destination) {
         logger.info("Finding routes with destination: {}", destination);
         List<Route> routes = routeRepo.findByDestination(destination);
         if (routes.isEmpty()) {
             throw new RouteNotFoundException("No routes found to destination: " + destination);
         }
-        return routes;
+        return routes.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
-    @Override
-    public Route addRoute(RouteDTO routeDTO) {
-    	logger.info("Adding new route: {}", routeDTO);
-        Route route = new Route();
-        Bus bus = busRepo.findById(routeDTO.getBusId())
-                .orElseThrow(() -> new BusNotFoundException("Bus not found with id: " + routeDTO.getBusId()));
-        route.setBusId(bus);
-        route.setOrigin(routeDTO.getOrigin());
-        route.setDestination(routeDTO.getDestination());
-        route.setDepartureTime(routeDTO.getDepartureTime());
-        route.setArrivalTime(routeDTO.getArrivalTime());
-        route.setFare(routeDTO.getFare());
-        return routeRepo.save(route);
-    }
-	
 }

@@ -3,6 +3,8 @@ package com.hexaware.fastx.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,6 +45,7 @@ public class Bus {
     private String amenities;
     
     @OneToMany(mappedBy = "busId", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Route> routes;
     
     @ManyToOne

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentServiceImpl implements IPaymentService {
@@ -22,35 +23,35 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Autowired
     private PaymentRepository repo;
-    
+
     @Autowired
     private BookingRepository bookingRepo;
-    
 
     @Override
-    public List<Payment> getAllPayments() {
-        logger.info("Fetching all payments from database");
-        return repo.getAllPayments();
+    public List<PaymentDTO> getAllPayments() {
+        logger.info("Fetching all payments");
+        return repo.getAllPayments().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Payment getPaymentById(int id) {
+    public PaymentDTO getPaymentById(int id) {
         logger.info("Fetching payment with ID: {}", id);
-        return repo.findById(id).orElseThrow(() -> {
+        Payment payment = repo.findById(id).orElseThrow(() -> {
             logger.error("Payment not found with ID: {}", id);
             return new PaymentNotFoundException("Payment not found with ID: " + id);
         });
+        return toDTO(payment);
     }
 
     @Override
-    public Payment createPayment(PaymentDTO dto) {
+    public PaymentDTO createPayment(PaymentDTO dto) {
         logger.info("Creating payment for booking ID: {}", dto.getBookingId());
 
-        // Validate and fetch the associated Booking entity
         Booking booking = bookingRepo.findById(dto.getBookingId())
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + dto.getBookingId()));
 
-        // Create and populate the Payment entity
         Payment payment = new Payment();
         payment.setBooking(booking);
         payment.setAmount(dto.getAmount());
@@ -58,43 +59,59 @@ public class PaymentServiceImpl implements IPaymentService {
         payment.setPaymentStatus(dto.getPaymentStatus());
         payment.setPaymentTime(dto.getPaymentTime());
 
-        // Save the Payment
         Payment saved = repo.save(payment);
         logger.info("Payment created with ID: {}", saved.getPaymentId());
-
-        return saved;
+        return toDTO(saved);
     }
 
-
     @Override
-    public Payment updatePayment(int id, Payment updatedPayment) {
+    public PaymentDTO updatePayment(int id, PaymentDTO dto) {
         logger.info("Updating payment with ID: {}", id);
-        Payment p = getPaymentById(id);
 
-        p.setBooking(updatedPayment.getBookingId());
-        p.setAmount(updatedPayment.getAmount());
-        p.setPaymentMethod(updatedPayment.getPaymentMethod());
-        p.setPaymentStatus(updatedPayment.getPaymentStatus());
-        p.setPaymentTime(updatedPayment.getPaymentTime());
+        Payment existing = repo.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found with ID: " + id));
 
-        Payment savedPayment = repo.save(p);
-        logger.info("Payment with ID: {} updated successfully", id);
-        return savedPayment;
+        Booking booking = bookingRepo.findById(dto.getBookingId())
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + dto.getBookingId()));
+
+        existing.setBooking(booking);
+        existing.setAmount(dto.getAmount());
+        existing.setPaymentMethod(dto.getPaymentMethod());
+        existing.setPaymentStatus(dto.getPaymentStatus());
+        existing.setPaymentTime(dto.getPaymentTime());
+
+        Payment saved = repo.save(existing);
+        logger.info("Payment updated with ID: {}", saved.getPaymentId());
+        return toDTO(saved);
     }
 
     @Override
     public void deletePayment(int id) {
         logger.info("Deleting payment with ID: {}", id);
-        Payment p = getPaymentById(id);
+        Payment p = repo.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found with ID: " + id));
         repo.delete(p);
-        logger.info("Payment with ID: {} deleted successfully", id);
+        logger.info("Deleted payment with ID: {}", id);
     }
 
     @Override
-    public List<Payment> getPaymentsByUserId(int userId) {
+    public List<PaymentDTO> getPaymentsByUserId(int userId) {
         logger.info("Fetching payments by user ID: {}", userId);
-        return repo.findPaymentsByUser_UserId(userId);
+        return repo.findPaymentsByUser_UserId(userId).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
+    // Conversion helper
+    private PaymentDTO toDTO(Payment payment) {
+        PaymentDTO dto = new PaymentDTO();
+        dto.setPaymentId(payment.getPaymentId());
+        dto.setBookingId(payment.getBooking().getBookingId());
+        dto.setAmount(payment.getAmount());
+        dto.setPaymentMethod(payment.getPaymentMethod());
+        dto.setPaymentStatus(payment.getPaymentStatus());
+        dto.setPaymentTime(payment.getPaymentTime());
+        return dto;
+    }
 
 }
